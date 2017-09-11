@@ -1,0 +1,194 @@
+/*
+    时间：2017年9月11日09:29:25。
+    目的：数据结构的列表的链式存储结构的构建。
+    编译器：codeblock。
+*/
+
+#include<stdio.h>
+#include<stdlib.h>
+
+//function status code.
+#define TRUE 1
+#define FALSE 0
+
+#define OK 1
+#define ERROR 0
+
+#define INFEASIBLE -1
+#define OVERFLOW -2
+
+// function type, function return value type, correspond to function status code.
+typedef int Status;
+
+// element type of a data element.
+typedef int ElemType;
+
+//The definition of a link node.
+typedef struct LNode {
+
+    ElemType data;
+    struct LNode *next;
+
+}LNode, *LinkList;
+
+//create a link list with head node according to the input.
+void CreateList(LinkList &L, int n)
+{
+    L = (LinkList)malloc(sizeof(LNode));
+    L->next = NULL;//create an empty link list with head node.
+    int i;
+    for(i = n; i>0; --i)
+    {
+        LinkList p = (LinkList)malloc(sizeof(LNode));
+        printf("Input the number you wanna storage in the list:");
+        //get the node data from the input.
+        scanf("%d", &p->data);
+        //insert the node to the head of the link list.
+        p->next = L->next;
+        L->next = p;
+    }
+}
+
+//Given a link list L with head node, if ith element exists, assign it to e and return OK.
+Status GetElem(LinkList L, int i, ElemType &e)
+{   //p point to the first element.
+    LinkList p = L->next;
+    int j;
+    while(p&&j<i)
+    {
+        p = p->next;
+        ++j;
+    }
+    //ith element does not exists or i is not a correct position
+    if(!p||j>i)
+    {
+        return ERROR;
+    }
+    e = p->data;
+    return OK;
+}
+
+//Given a link list with head node, insert e before the i position.
+Status ListInsert(LinkList &L, int i, ElemType e)
+{
+    LinkList p = L;
+    int j = 0;
+    while(p&&j<i-1)
+    {
+        p = p->next;
+        ++j;
+    }
+    //ith element does not exists or i is not a correct position
+    if(!p||j>i-1)
+    {
+        return ERROR;
+    }
+    //create a new node
+    LinkList s = (LinkList)malloc(sizeof(LNode));
+    s->data = e;
+	//insert at the i position
+    s->next = p->next;
+    p->next = s;
+    return OK;
+}
+
+//Given a link list with head node, delete the ith element and assign it to e
+Status ListDelete(LinkList &L, int i, ElemType &e)
+{
+    //set p as the direct pioneer of the element to be removed
+    LinkList p = L;
+    int j = 0;
+    while(p->next&&j<i-1)
+    {
+        p = p->next;
+        ++j;
+    }
+    //i is not a correct position
+    if(!(p->next)||j>i-1)
+    {
+        return ERROR;
+    }
+    //keep q as a temp pointer for space free
+	LinkList q = p->next;
+	//assign the deleted element to e
+	e = q->data;
+	//delete the ith element
+	p->next = p->next->next;
+	//free ith node space
+	free(q);
+}
+void ShowList(LinkList L)
+{
+	LinkList p = L;
+	if (!(p->next))
+	{
+		printf("Now p is an empty list.\n");
+	}
+	while (p->next)
+	{
+		printf("%4d", p->next->data);
+		p = p->next;
+	}
+	printf("\n");
+}
+//Given two link list with head node(La,Lb), merge it into Lc(with head node)
+void MergeList(LinkList &La, LinkList &Lb, LinkList &Lc)
+{
+	//La,Lb is in nondecreasing order and so does the new created Lc
+	LinkList pa = La->next;
+	LinkList pb = Lb->next;
+	//using the head node of La
+	LinkList pc = La;
+	Lc = pc;
+	while (pa && pb)
+	{
+		if (pa->data <= pb->data)
+		{
+			pc->next = pa;
+			pc = pa;
+			pa = pa->next;
+		}
+		else
+		{
+			pc->next = pb;
+			pc = pb;
+			pb = pb->next;
+		}
+	}
+	//add the left to the tail of Lc
+	pc->next = pa ? pa : pb;
+	//free the head node of Lb
+	free(Lb);
+}
+int main()
+{
+	LinkList L;
+	int n;
+	printf("Input the length of the list you wanna create:");
+	scanf("%d", &n);
+	CreateList(L, n);
+	ShowList(L);
+	ListInsert(L, 2, 3);
+	printf("%d has been insert at position %d.\n", 3, 2);
+	ShowList(L);
+	int temp;
+	ListDelete(L, 3, temp);
+	printf("%d has been removed from the list.\n", temp);
+	ShowList(L);
+
+	//now create anther link list
+	printf("Now create the other link list.\n");
+	LinkList LL;
+	int nn;
+	printf("Input the length of the list you wanna create:");
+	scanf("%d", &nn);
+	CreateList(LL, nn);
+	printf("Link list has been created:\n");
+	ShowList(LL);
+	printf("Merge the two list above and the result can be seen as below:\n");
+	LinkList LLL;
+	MergeList(L, LL, LLL);
+	ShowList(LLL);
+	return 0;
+}
+
