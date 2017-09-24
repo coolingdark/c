@@ -1,0 +1,103 @@
+/*
+    时间： 2017年9月24日13:52:31
+    目的：数据结构的列表的链式存储结构的构建。
+    编译器：codeblock。
+*/
+# include <stdio.h>
+# include <stdlib.h>
+
+//function status code
+#define TRUE 1
+#define FALSE 0
+
+#define OK 1
+#define ERROR 0
+
+#define INFEASIBLE -1
+#define OVERFLOW -2
+
+
+// function type, function return value type, correspond to function status code.
+typedef int Status;
+
+// element type of a data element
+typedef int ElemType;
+
+typedef struct StackNode{
+     ElemType data;
+     struct StackNode *next;
+}StackNode, *LinkStackPtr;
+
+typedef struct LinkStack{
+     LinkStackPtr top;
+     int count;
+}LinkStack;
+
+Status InitStack(LinkStack &S)
+{
+    S.top=NULL;
+    S.count=0;
+}
+
+Status PushStack(LinkStack &S, ElemType e)
+{
+    LinkStackPtr P = (LinkStackPtr)malloc(sizeof(StackNode));
+    P->data = e;
+    P->next = S.top;
+    S.top = P;
+    S.count++;
+    return OK;
+}
+
+bool is_empty_stack(LinkStack S)
+{
+    if(0==S.count)
+    {
+        return TRUE;
+    }
+    return FALSE;
+}
+
+Status PopStack(LinkStack &S, ElemType *e)
+{
+    LinkStackPtr P;
+    if(is_empty_stack(S))
+    {
+        return ERROR;
+    }
+    *e = S.top->data;
+    P = S.top;
+    S.top = S.top->next;
+    free(P);
+    S.count--;
+    return OK;
+}
+
+void PrintStack(LinkStack &S)
+{
+    while (!is_empty_stack(S))
+    {
+        int a;
+        PopStack(S, &a);
+        printf("%d\n", a);
+    }
+};
+int main()
+{
+    int i;
+    LinkStack Stack;
+    InitStack(Stack);
+    for(i=0;i<20;i++)
+    {
+        ElemType data = i;
+        PushStack(Stack, data);
+    }
+    PrintStack(Stack);
+    if(is_empty_stack(Stack))
+    {
+        printf("array stack is empty");
+    }
+    return 0;
+}
+
+
