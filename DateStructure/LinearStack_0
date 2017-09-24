@@ -1,0 +1,104 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+#define TRUE 1
+#define FALSE 0
+#define OK 1
+#define ERROR 0
+#define OVERFLOW -2
+#define STACK_INIT_SIZE 10
+#define STACK_GROW_SIZE 10
+
+typedef int Status;
+typedef int ElemType;
+
+typedef struct
+{
+    ElemType *base;
+    int top;
+    int nowsize;
+}SqStack;
+void InitStack(SqStack &S)
+{
+    S.base = (ElemType *)malloc(STACK_INIT_SIZE*sizeof(ElemType));
+    if(!S.base)
+    {
+        exit(OVERFLOW);
+    }
+    S.top = -1;
+    S.nowsize = STACK_INIT_SIZE;
+}
+bool is_empty_stack(SqStack S)
+{
+    if(-1 == S.top)
+    {
+        return TRUE;
+    }
+    return FALSE;
+}
+bool is_full_stack(SqStack S)
+{
+    if(S.top>=S.nowsize-1)
+    {
+        return TRUE;
+    }
+    return FALSE;
+}
+void PushStack(SqStack &S, ElemType *data)
+{
+    if(is_full_stack(S))
+    {
+        ElemType *newbase = (ElemType *)realloc(S.base, (STACK_GROW_SIZE + S.nowsize) * sizeof(ElemType));
+        if(!newbase)
+        {
+            exit(OVERFLOW);
+        }
+        S.base = newbase;
+        S.nowsize += STACK_GROW_SIZE;
+    }
+    S.top++;
+    S.base[S.top] = *data;
+}
+
+void PopStack(SqStack &S, ElemType* data)
+{
+    if (is_empty_stack(S))
+    {
+        printf("array stack is empty");
+        return;
+    }
+    *data=S.base[S.top];
+    S.top--;
+}
+void PrintStack(SqStack &S)
+{
+    while (!is_empty_stack(S)) {
+        int a;
+       PopStack(S, &a);
+        printf("%d\n", a);
+    }
+};
+void destroy_stack(SqStack &S)
+{
+    free(S.base);
+    printf("has been destroyed stack array");
+}
+int main()
+{
+    int i;
+    SqStack Stack;
+    InitStack(Stack);
+    for(i=0;i<20;i++)
+    {
+        ElemType data = i;
+        PushStack(Stack, &data);
+    }
+    PrintStack(Stack);
+    destroy_stack(Stack);
+    return 0;
+}
+
+
+
+
+
