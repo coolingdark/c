@@ -186,7 +186,7 @@ int main()
 	printf("Link list has been created:\n");
 	ShowList(LL);
 	printf("Merge the two list above and the result can be seen as below:\n");
-	LinkList LLL;
+	LinkList LLL; 
 	MergeList(L, LL, LLL);
 	ShowList(LLL);
 	return 0;
