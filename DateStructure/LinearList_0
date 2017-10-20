@@ -165,7 +165,7 @@ int main()
 
 	ClearList(sqlist);//清空表
 	if (ListEmpty(sqlist))//判断是否为空表
-	{
+	{ 
 		printf("\n列表已清空\n强行访问列表查看前10个元素的值\n");
 	}
 	else
