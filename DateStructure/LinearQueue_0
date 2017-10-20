@@ -1,0 +1,117 @@
+# include<stdio.h>
+# include<stdlib.h>
+
+#define TRUE 1
+#define FALSE 0
+#define OK 1
+#define ERROR 0
+#define OVERFLOW -2
+#define QUEUE_SIZE 10                        //Set queue capacity
+
+typedef int Status;
+typedef int ElemType;
+
+typedef struct
+{
+    ElemType *elem;
+    int front, rear;
+}Sequeue;
+
+//function declaration
+void InitQueue(Sequeue & Q);                //The queue initialization
+bool IsEmpty(Sequeue & Q);                  //If queue is empty
+bool IsFull(Sequeue & Q);                   //If queue is full
+bool EnQueue(Sequeue & Q, int value);       //Add elem to queue
+bool OutQueue(Sequeue & Q, int & value);    //Delete the elem from queue and save it
+void TraverseQueue(Sequeue & Q);            //Traverse the queue and print
+
+int main()
+{
+    int value, i;
+    Sequeue queue;
+    InitQueue(queue);
+    for(i=0;i<10;++i)
+    {
+        EnQueue(queue, i);
+    }
+    TraverseQueue(queue);
+    if(OutQueue(queue, value))
+    {
+        printf("Delete an elem from queue and it is: %d\n", value);
+    }
+    TraverseQueue(queue);
+    if(OutQueue(queue, value))
+    {
+        printf("Delete an elem from queue and it is: %d\n", value);
+    }
+    TraverseQueue(queue);
+    getchar();
+    return 0;
+}
+void InitQueue(Sequeue & Q)
+{
+    Q.elem = (ElemType*)malloc(QUEUE_SIZE*sizeof(ElemType));
+    if(!Q.elem)
+    {
+    exit(OVERFLOW);
+    }
+
+    Q.front = Q.rear = 0;
+
+}
+bool IsEmpty(Sequeue & Q)
+{
+    if (Q.front == Q.rear)
+        return TRUE;
+    else
+        return FALSE;
+
+}
+bool IsFull(Sequeue & Q)
+{
+    if((Q.rear+1)%QUEUE_SIZE==Q.front)
+        return TRUE;
+    else
+        return FALSE;
+}
+bool EnQueue(Sequeue & Q, int value)
+{
+    if(IsFull(Q))
+    {
+        printf("The queue is full！\n");
+        return FALSE;
+    }
+    else
+    {
+        Q.elem[Q.rear] = value;
+        Q.rear = (Q.rear+1)%QUEUE_SIZE;
+    }
+    return TRUE;
+}
+bool OutQueue(Sequeue & Q, int & value)
+{
+    if(IsEmpty(Q))
+    {
+        printf("The queue is empty");
+        return FALSE;
+    }
+    else
+    {
+        value = Q.elem[Q.front];
+        Q.front = (Q.front+1)%QUEUE_SIZE;
+        return TRUE;
+    }
+
+}
+void TraverseQueue(Sequeue & Q)
+{
+    int i = Q.front;
+    printf("Traverse the queue：\n");
+    while(i != Q.rear)
+    {
+        printf("%d  ", Q.elem[i]);
+        i = (i+1) % QUEUE_SIZE;
+    }
+    printf("\n");
+    return;
+}
