@@ -1,0 +1,126 @@
+#include<stdio.h>
+#include<stdlib.h>
+
+#define OK 1
+#define ERORR 0
+#define TRUE 1
+#define FALSE 0
+#define INFEASIBLE -1
+#define OVERFLOW -2
+
+typedef int Status;
+typedef int ElemType;
+
+typedef struct Node
+{
+    ElemType data;
+    struct Node *next;
+}Node, *Queue;
+
+typedef struct
+{
+    Queue front;
+    Queue rear;
+}LinkQueue;
+
+//function declaration
+void InitQueue(LinkQueue* Q);              //The queue initialization
+bool IsEmpty(LinkQueue Q);                  //If queue is empty
+void InsertQueue(LinkQueue *Q, int temp);   //Add elem to queue
+void DeleteQueue(LinkQueue *Q);
+void TraverseQueue(LinkQueue Q);            //Traverse the queue and print
+void DestoryQueue(LinkQueue *Q);
+
+int main()
+{
+    LinkQueue queue;
+    InitQueue(&queue);
+    TraverseQueue(queue);
+
+    InsertQueue(&queue, 0);
+    InsertQueue(&queue, 1);
+    InsertQueue(&queue, 2);
+    InsertQueue(&queue, 3);
+    InsertQueue(&queue, 4);
+    InsertQueue(&queue, 5);
+    TraverseQueue(queue);
+
+    DeleteQueue(&queue);
+    TraverseQueue(queue);
+
+    DeleteQueue(&queue);
+    TraverseQueue(queue);
+
+    DeleteQueue(&queue);
+    TraverseQueue(queue);
+
+    DestoryQueue(&queue);
+}
+void InitQueue(LinkQueue *Q)
+ {
+    Q->front = Q->rear = (Queue)malloc(sizeof(Node));//Queue==*Node
+
+    if (NULL == Q->front)
+    {
+        exit(OVERFLOW);
+    }
+         Q->front->next = NULL;
+}
+bool IsEmpty(LinkQueue Q)
+{
+    return Q.rear == Q.front ? 1 : 0;
+}
+void InsertQueue(LinkQueue *Q, int temp)
+{
+    Queue q = (Queue)malloc(sizeof(Node));
+
+    if (NULL == q)
+    {
+        exit(OVERFLOW);
+    }
+    q->data = temp;
+    q->next = NULL;
+    Q->rear->next = q;
+    Q->rear = q;
+}
+ void DeleteQueue(LinkQueue *Q)
+ {
+    Queue q = NULL;
+
+    if (!IsEmpty(*Q))
+    {
+        q = Q->front->next;
+        Q->front->data = q->data;
+        Q->front->next = q->next;
+        //important
+    if (Q->rear == q)
+    {
+        Q->rear = Q->front;
+    }
+
+         free(q);
+    }
+}
+
+void TraverseQueue(LinkQueue Q)
+{
+     int i = 1;
+     Queue q = Q.front->next;
+
+     while (q != NULL) {
+         printf("key:%d, value:%d |", i, q->data);
+         q = q->next;
+         i++;
+     }
+     printf("\n");
+}
+void DestoryQueue(LinkQueue *Q)
+{
+    while (Q->front != NULL)
+    {
+         Q->rear = Q->front->next;
+         free(Q->front);
+         Q->front = Q->rear;
+    }
+     puts("Destruction of success!"); 
+}
