@@ -1,0 +1,242 @@
+#include<stdio.h>
+#include<stdlib.h>
+
+#define OK 1
+#define ERROR 0
+#define TRUE 1
+#define FALSE 0
+#define OVERFLOW -2
+
+typedef int Status;
+typedef int ElemType;
+
+typedef struct Node
+{
+        ElemType data;
+        struct Node *lchild;
+        struct Node *rchild;
+}Node, *BSTree;
+
+
+
+BSTree search(BSTree pTree, int key)
+{
+    if(!pTree||pTree->data==key)
+        return pTree;
+    else if (pTree->data<key)
+        return search(pTree->lchild, key);
+    else
+        return search(pTree->rchild, key);
+}
+
+bool search_BSTree(BSTree pTree,int key,BSTree parent,BSTree &p)
+{
+    if(!pTree)
+    {
+        p = parent;
+        return false;
+    }
+    else
+    {
+        if(key == pTree->data)
+        {
+            p = pTree;
+            return true;
+        }
+        else if(key < pTree->data)
+            return search_BSTree(pTree->lchild,key,pTree,p);
+        else
+            return search_BSTree(pTree->rchild,key,pTree,p);
+    }
+}
+
+bool insert(BSTree &pTree,int key)
+{
+    BSTree p;
+    if(!search_BSTree(pTree,key,NULL,p))
+    {
+        BSTree pNew = (BSTree)malloc(sizeof(Node));
+        pNew->data = key;
+        pNew->lchild = pNew->rchild = NULL;
+
+        if(!p)
+            pTree = pNew;
+        else if(key < p->data)
+            p->lchild = pNew;
+        else
+            p->rchild = pNew;
+        return true;
+    }
+    else
+        return false;
+}
+void delete_Node1(BSTree &p)
+{
+    BSTree q,s;
+    if(!p->lchild)
+    {
+        q = p;
+        p = p->rchild ;
+        free(q);
+    }
+    else if(!p->rchild)
+    {
+        q = p;
+        p = p->lchild;
+        free(q);
+    }
+    else
+    {
+        s = p->lchild;
+        while(s->rchild)
+            s = s->rchild;
+        s->rchild = p->rchild;
+        q = p;
+        p = p->lchild;
+        free(q);
+    }
+}
+void delete_Node2(BSTree &p)
+{
+    BSTree q,s;
+    if(!p->lchild)
+    {
+        q = p;
+        p = p->rchild ;
+        free(q);
+    }
+    else if(!p->rchild)
+    {
+        q = p;
+        p = p->lchild;
+        free(q);
+    }
+    else
+    {
+        q = p;
+        s = p->lchild;
+        while(s->rchild)
+        {
+            q = s;
+            s = s->rchild;
+        }
+        p->data = s->data;
+        if(p != q)
+            q->rchild = s->lchild;
+        else
+            q->lchild =s->lchild;
+        free(s);
+    }
+}
+
+
+bool delete_BSTree(BSTree &pTree,int key)
+{
+
+    if(!pTree)
+        return false;
+    else
+    {
+        if(key == pTree->data)
+        {
+            delete_Node1(pTree);
+//          delete_Node2(pTree);
+            return true;
+        }
+        else if(key < pTree->data)
+            return delete_BSTree(pTree->lchild,key);
+        else
+            return delete_BSTree(pTree->rchild,key);
+    }
+}
+
+
+BSTree create_BSTree(int *arr,int len)
+{
+    BSTree pTree = NULL;
+    int i;
+    for(i=0;i<len;i++)
+        insert(pTree,arr[i]);
+    return pTree;
+}
+
+void in_traverse(BSTree pTree)
+{
+    if(pTree)
+    {
+        if(pTree->lchild)
+            in_traverse(pTree->lchild);
+        printf("%d ",pTree->data);
+        if(pTree->rchild)
+            in_traverse(pTree->rchild);
+    }
+}
+
+
+void destroy_BSTree(BSTree pTree)
+{
+    if(pTree)
+    {
+        if(pTree->lchild)
+            destroy_BSTree(pTree->lchild);
+        if(pTree->rchild)
+            destroy_BSTree(pTree->rchild);
+        free(pTree);
+        pTree = NULL;
+    }
+}
+
+int main()
+{
+    int i;
+    int num;
+    printf("Input the number of nodes:");
+    scanf("%d",&num);
+
+    int *arr = (int *)malloc(num*sizeof(int));
+    printf("Please enter these integers(%d) in sequence (must not be equal)",num);
+    for(i=0;i<num;i++)
+        scanf("%d",arr+i);
+
+    //Order from small to large
+    BSTree pTree = create_BSTree(arr,num);
+    printf("Sort results:");
+    in_traverse(pTree);
+    printf("\n");
+
+    //search key
+    int key;
+    printf("Input the key which you want to find：");
+    scanf("%d",&key);
+    if(search(pTree,key))
+        printf("Find success!\n");
+    else
+        printf("can not find it!\n");
+
+    //insert a num
+    printf("Input the num which you want to insert：");
+    scanf("%d",&key);
+    if(insert(pTree,key))
+    {
+        printf("Insert success!  and sort results:");
+        in_traverse(pTree);
+        printf("\n");
+    }
+    else
+        printf("Insert false，the %d already in the tree!\n",key);
+
+    //delete a num
+    printf("Input the num which you want to delete：");
+    scanf("%d",&key);
+    if(delete_BSTree(pTree,key))
+    {
+        printf("Delete success!  and sort results:");
+        in_traverse(pTree);
+        printf("\n");
+    }
+    else
+        printf("Delete false，the %d was not in the tree\n",key);
+
+    return 0;
+}
+
